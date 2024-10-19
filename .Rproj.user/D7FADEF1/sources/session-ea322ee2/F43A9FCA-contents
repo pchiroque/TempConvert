@@ -1,0 +1,129 @@
+---
+title: "Solution Practical using R"
+format: html
+author: Pamela Solano 
+editor: visual
+---
+
+1.  Working with dataframes.
+
+<!-- -->
+
+(a) Create a dataframe called animals with columns names and values as follows; make sure medium is a *factor*. We will be using this data frame again later:
+
+```{r, warning=FALSE}
+library(tidyverse)
+
+df <- data.frame(rbind(
+c("swift", 200.00, "air", 0.02),
+c("falcon", 70.00, "air", 0.70),
+c("goose", 70.00, "air", 2.20),
+c("starling", 50.00, "air", 0.05),
+c("cheetah", 70.00, "land", 50.00),
+c("horse", 50.00, "land", 450.00),
+c("hippo", 30.00, "land", 2500.00),
+c("man", 25.00, "land", 80.00),
+c("squirrel", 12.00, "land", 0.60),
+c("cat", 35.00, "land", 4.00),
+c("shark", 40.00, "water", 600.00),
+c("seahorse", 0.02, "water", 0.10)))
+
+ 
+
+df <- df %>% `colnames<-`(c("species", "speed", "medium", "weight")) %>% 
+  dplyr::mutate(
+ # species = as.factor(species),
+  speed = as.numeric(speed),
+  medium = as.factor(medium),
+  weight = as.numeric(weight))
+
+df %>% str
+```
+
+(b) Create the following plot in R.
+
+```{r, warning=FALSE}
+
+df %>% 
+  ggplot()+
+  geom_boxplot(aes(x=medium,y=speed))
+
+```
+
+(c) Select all animals that live in water from the data.frame.
+
+```{r, warning=FALSE}
+
+df %>% 
+dplyr::filter(medium=="water")
+```
+
+(d) Write a piece of code that finds how many animals in the data.frame belong to each of the three media.
+
+```{r, warning=FALSE}
+
+df %>% 
+  group_by(medium) %>% 
+  summarise(n=n())
+
+```
+
+2.  Functions
+
+    (a) Write a function called skewed that calculates the skewness index (*I* = 3(*x*¯ − *p*~50~)*s*) of the data set where *x*¯ is the mean of the data, *p*~50~ is the median and *s* is the standard deviation. It should return either "The data is significantly skewed" if the index is greater than 1 and "The data is not significantly skewed" otherwise.
+
+    ```{r, warning=FALSE}
+    skewness <- function(d){
+      index = 3*(mean(d)-median(d))/sd(d)
+      return(ifelse(abs(index)>1,"The data is significantly skewed","The data is not significantly"))
+    }
+
+    ```
+
+    (b) Generate 100 observations, *x*, that are standard normally distributed and use your function to determine if the data are skewed. Verify the result visually.
+
+    ```{r,warning=FALSE}
+    x <- rnorm(100)
+    skewness(x)
+    hist(x)
+    ```
+
+    (c) Find *y* = *x*^2^ and check whether your resulting data are skewed.
+
+```{r,warning=FALSE}
+y <- x**2
+
+skewness(y)
+hist(y)
+```
+
+3.  R packages
+
+    (a) Write functions that convert temperatures from F to C and vice versa. The formula to obtain degrees C from degrees F is:
+
+    ```{r, warning=FALSE}
+
+    FtoC <- function(ft){(ft-32)*(5/9)}
+
+    CtoF <- function(ct){(ct*(5/9))*32}
+
+
+    ```
+
+> *C* = (*F* − 32) ∗ 5*/*9
+
+(b) Create an R package temp convert. Make sure that you include all necessary informa- tion so that another user is able to utilize your package.
+
+Follow these lines:
+
+File New project New directory R package name: temp_convert (problem) TempConvert : newname Delete nameespace include new .r with the functions
+
+\#'@export FtoC \#'@export CtoF
+
+FtoC \<- function(ft){(ft-32)*(5/9)} CtoF \<- function(ct){(ct*(5/9))\*32}
+
+write the namespace using roxygen2::roxygenise()
+
+install your package control + alt + B
+
+library(TempConvert)
